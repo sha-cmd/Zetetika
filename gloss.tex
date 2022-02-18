@@ -1,26 +1,26 @@
 \newglossaryentry{ASPP}{
 name={Atrous Spatial Pyramid Pooling},
-description={La convolution Atrous  permet de contrôler explicitement la résolution à laquelle les réponses de features sont calculées à l’intérieur du Deep Convolutional Neural Networks. Elle provient d’une technique plus ancienne qui mais reste une stratégie orienté sur le pooling}
+description={La convolution Atrous  permet de contrôler explicitement la résolution à laquelle les réponses de features sont calculées à l’intérieur du Deep Convolutional Neural Networks. Cette convolution Atrous provient d’une technique plus ancienne mais qui reste une stratégie orienté sur le pooling}
 }
 
 \newglossaryentry{SA}{
 name={SOTA},
-description={State of the art. Défini les standards les plus exigents de l’industrie et notamment pour la recherche, dans le domaine de la vision par ordinateur}
+description={State of the art. Défini les standards les plus exigeants de l’industrie et notamment pour la recherche, dans le domaine de la vision par ordinateur}
 }
 
 \newglossaryentry{DL}{
 name={Deep Learning},
-description={Apprentissage profond. Ce terme regroupe les méthodes d’apprentissage utilisée dans des graphes ou des réseaux ou encore des modules paramétrés et interconnectés. L’apprentissage a court en mettant à jour les poids dans le réseau par descente de gradient. Plusieurs optimiseurs sont possible, de plus la fonction de coût s’adapte à l’apprentissage du réseau.}
+description={Apprentissage profond. Ce terme regroupe les méthodes d’apprentissage utilisées dans des graphes ou des réseaux ou encore des modules paramétrés et interconnectés. L’apprentissage a court en mettant à jour les poids dans le réseau par descente de gradient. Plusieurs optimiseurs sont possible, de plus la fonction de coût s’adapte à l’apprentissage du réseau}
 }
 
 \newglossaryentry{ReLU}{
 name={ReLU},
-description={Rectified Linear Unit activation function. Cette fonction est définie sur $[-\infty, \infty]$, mais prend pour valeur $0$ avec les valeurs négatives. De plus elle ne change pas la valeur si cette dernière est positive ou même nulle}
+description={Rectified Linear Unit activation function. Cette fonction est définie sur $[-\infty, \infty]$, mais prend pour valeur $0$ avec les valeurs négatives. De plus elle ne change pas de valeur si cette dernière est positive ou même nulle}
 }
 
 \newglossaryentry{DCNN}{
 name={DCNN},
-description={Deep Convolutional Neural Networks. Ils sont utilisés dans la classification d’image, la reconnaissance d’objet, et dans la segmentation d’image, notamment combiné à un "algorithme à trous" (issu de la transformé en ondelette) pour réduire l’impact des invariants de DCNN sur la segmentation d’image car il augmente l’exactitude de localisation, voire DeepLab}
+description={Deep Convolutional Neural Networks. Ils sont utilisés dans la classification d’image, la reconnaissance d’objet, et dans la segmentation d’image, notamment combiné à un "algorithme à trous" (issu de la transformé en ondelette) pour réduire l’impact des invariants de DCNN sur la segmentation d’image, car ils augmente l’exactitude de localisation, voir DeepLab}
 }
 
 \newglossaryentry{DLV3}{
@@ -35,7 +35,7 @@ description={Singularités dans l’image, capturées à travers des filtres et 
 
 \newglossaryentry{FCN}{
 name={FCN},
-description={Ce sont des réseaux convolutifs ou "convnets", qui sont complètement connectés, i.e. chaque neurone de sortie est connecté aux neurones d’entrée. Ils permettent non seulement la classification de l’image entière, mais en en ayant permis des progrès sur les tâches locales, pourvoyant des outputs structurés}
+description={Ce sont des réseaux convolutifs ou "convnets", qui sont complètement connectés, i.e. chaque neurone de sortie est connecté aux neurones d’entrée. Ils permettent non seulement la classification de l’image entière, mais en ayant permis des progrès sur les tâches locales, renvoie en plus des outputs structurés}
 }
 
 
@@ -46,7 +46,7 @@ description={La moyenne d’une « Intersection over Union » (IoU), aussi connu
 
 \newglossaryentry{CFM}{
 name={CFM},
-description={C’est une méthode (et même un outil), qui relie des extractions de features issues de la convolution puis ensuite, extrait des segments depuis des cartes de features plutôt qu’à partir d’une image brute. Ces segments donnés par R-CNN, sont projetés sur la dernière couche. Les segments projetés jouent un rôle de fonction binaire : les features masquées sont transmises à la couche complètement connectée (fully-connected) pour la reconnaissance}
+description={C’est une méthode (et même un outil), qui relie des extractions de caractéristiques issues de la convolution, puis, qui extrait des segments depuis des cartes de caractéristiques plutôt qu’à partir d’une image brute. Ces segments donnés par R-CNN, sont projetés sur la dernière couche. Les segments projetés jouent un rôle de fonction binaire : les caractéristiques masquées sont transmises à la couche complètement connectée (fully-connected) pour la reconnaissance}
 }
 
 \newglossaryentry{SIFT}{
@@ -66,15 +66,15 @@ description={Region-Based Convolutional Neural Network, c'est un type de réseau
 
 \newglossaryentry{FasterR-CNN}{
 name={Faster R-CNN},
-description={C’est un réseau qui extrait les caractéristiques en utilisant le RolPool (Region of Interest Pooling) de chaque boîte évaluée en réalisant une classification et une regression sur les boîte délimitatrice du contour de l’objet. Le RolPool est une opération d’extraction de carte de petites caractéristiques de chaque Rol durant la détection}
+description={C’est un réseau qui extrait les caractéristiques en utilisant le RoIPool (Region of Interest Pooling) de chaque boîte évaluée en réalisant une classification et une régression sur les boîte délimitant le contour de l’objet. Le RoIPool est une opération d’extraction de carte de petites caractéristiques de chaque RoI durant la détection}
 }
 
 \newglossaryentry{Transferlearning}{
 name={Transfer learning},
-description={Apprentissage visant à incorporer les poids d’entraînement d’un premier réseau, sur le dessus d’un second réseau, qui est souvent spécialisé dans l’exécution d’une tâche précise}
+description={Apprentissage visant à incorporer les poids d’entraînement d’un premier réseau, sur le dessus d’un second réseau, le premier étant souvent spécialisé dans l’exécution d’une tâche précise}
 }
 
 \newglossaryentry{Dice}{
 name={S{\o}rensen-Dice},
-description={Indice de Sørensen ou coefficient de Dice, développé par les botanistes Thorvald Sørensen et Lee Raymond Dice dans des articles publiés respectivement en 1948 et 1945. Il exprime, en statistique, la similarité entre 2 échantillons}
+description={Indice de S{\o}rensen ou coefficient de Dice, développé par les botanistes Thorvald Sørensen et Lee Raymond Dice dans des articles publiés respectivement en 1948 et 1945. Il exprime, en statistique, la similarité entre 2 échantillons}
 }

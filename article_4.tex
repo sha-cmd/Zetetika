@@ -79,7 +79,7 @@ headinclude,footinclude, % Extra spacing for the header and footer
 \newpage
 \section*{Abstract} % This section will not appear in the table of contents due to the star (\section*)
 
-Ce document détaille l’étendue des prolégomènes du domaine de la segmentation sémantique d’image sur une architecture basée en réseau neuronal profond. À cet effet, nous avons parcouru, pour les résumer, des papiers scientifiques, en profitant de leur disponibilité, sur le site Arxiv. Puis nous avons ajouté une présentation de nos modèles en exposant notre démarche et de nos résultats. Dans un premier temps, nous expliquons le champ de la segmentation d’image et dans un second nous passons en revue l’état de l’art (\gls{SA}) en contextualisant la recherche de manière synthétique à notre cas particulier avec des réseaux comme Xception ou ResNet 50. Dans un second temps, nous parlons de la préparation de nos données et de quelques-unes des solutions que nous avons construites. Enfin, dans un troisième temps, nous présentons les résultats de l’architecture qui se démarque dans nos expériences, \index{DeepLabV3}\gls{DLV3}, laquelle a réalisé $62.1\%$ \index{mIoU}\gls{MIOU} (mean of intersection over union) et $71\%$ de coefficient Dice sur la base Cityscapes.
+Ce document détaille l’étendue des prolégomènes du domaine de la segmentation sémantique d’image sur une architecture basée en réseau neuronal profond. À cet effet, nous avons parcouru, pour les résumer, des papiers scientifiques, en profitant de leur disponibilité, sur le site Arxiv. À ceux-là nous avons ajouté une présentation de nos modèles en exposant notre démarche et nos résultats. Dans un premier temps, nous expliquons pourquoi le champ de la segmentation d’image est lié aux réseaux convolutifs en passant en revue l’état de l’art (\gls{SA}) en le contextualisant avec la recherche, de manière synthétique et pour notre cas particulier, i.e. avec des réseaux comme Xception ou ResNet 50. Dans un second temps, nous parlons de la préparation de nos données et de quelques-unes des solutions que nous avons élaborées en \index{Deep Learning}apprentissage profond. Enfin, dans un troisième temps, nous présentons les résultats de l’architecture qui se démarque dans nos expériences, \index{DeepLabV3}\gls{DLV3}, laquelle a réalisé $62.1\%$ \index{mIoU}\gls{MIOU} (mean of intersection over union) et $71\%$ de coefficient \index{S{\o}rensen-Dice}\gls{Dice} sur la base Cityscapes, avec une augmentation de données.
 
 %----------------------------------------------------------------------------------------
 %	AUTHOR AFFILIATIONS
@@ -97,29 +97,27 @@ Ce document détaille l’étendue des prolégomènes du domaine de la segmentat
 %	INTRODUCTION
 %----------------------------------------------------------------------------------------
 
-\section{Segmentation sémantique}
-\paragraph{}À partir des \index{R-CNN}\gls{R-CNN}, La segmentation sémantique classifie chaque pixel en un nombre fixe de catégores sans différentiation du nombre d’instance. Elle traite de l’identification ou de la classification d’objets similaires en une seule et même classe au niveau du pixel.\\
-Les Masques R-CNN ont été construits en utilisant le \index{Faster R-CNN}\gls{FasterR-CNN}. Tandis que le Faster R-CNN a 2 sorties pour les objets (un label de classe et un cadre délimitant l’objet), les Masques R-CNN sont l’addition d’une troisième branche dont la sortie est le masque d’objet(s).
+\section{Segmentation Sémantique}
+\paragraph{}À partir des \index{R-CNN}\gls{R-CNN}, La segmentation sémantique classifie chaque pixel en un nombre fixe de catégories mais sans différentiation du nombre d’instance, ce paramètre n’étant pas pris en compte dans la tâche de segmentation. Cette dernière traite de l’identification ou de la classification d’objets similaires en une seule et même classe au niveau du pixel, bien qu’il puisse se trouver plusieurs classes d’objets dans une image.\\
+Les Masques R-CNN, qui sont la traduction en calque d’une segmentation d’image, ont été construits en utilisant le \index{Faster R-CNN}\gls{FasterR-CNN}. Toutefois, alors que le Faster R-CNN a 2 sorties pour les objets (un label de classe et un cadre délimitant l’objet), les Masques R-CNN sont l’addition d’une troisième branche dont la sortie est le masque d’objet(s).
 \\
-Ce masque de sortie est distinct de la classe des cadres délimiteurs. Ils requièrent l’extraction d’une délimitation en plus de l’objet dans l’espace, par un calque. Les Masques \index{R-CNN}R-CNN sont une extension des \index{Faster R-CNN}Faster R-CNN et fonctionnent en ajoutant une branche de prédiction d’un calque d’objet (Région d’Intérêt) en parallèle d’une branche existante pour délimiter les limites encadrant l’objet reconnu dans l’image.
+Ce masque de sortie est distinct de la classe des cadres délimiteurs d’objets. Ils requièrent l’extraction d’une délimitation en plus, de l’objet dans l’espace, par un calque. Les Masques \index{R-CNN}R-CNN sont une extension des \index{Faster R-CNN}Faster R-CNN et fonctionnent en ajoutant une branche de prédiction d’un calque d’objet (Région d’Intérêt) en parallèle d’une branche existante, car cet ajout délimite les limites encadrant l’objet reconnu dans l’image.
 
 
-\section{Les Réseaux convolutifs}
+\section{Les Réseaux Convolutifs}
 
-%\paragraph{}Dès l’année $2014$, dans le domaine de la vision par ordinateur, les réseaux convolutifs complètement connectés (\index{FCN}\gls{FCN}) réalisent déjà des tâches de segmentation en décelant des hiérarchies de fonctionnalités que nous appellerons \index{features}\gls{FEATS}, qui sont des singularités appartenant à l’image dans ses $3$ dimensions. Les chercheurs de Microsoft explorent les possibilités offertes par le masquage des cartes de fonctionnalités de convolution, ou convolutional feature maps (\gls{CFM}) \cite{dai2015convolutional}.\paragraph{}\cite{cho2017xception}
-
-\paragraph{}LeNet est le premier réseau convolutionnel, lequel fut créé par Bell Labs.
+\paragraph{}LeNet est le premier réseau convolutif, lequel fut créé par Bell Labs.
 La fin des années 1980 et le début des années 1990 sont le moment du développement des réseaux de neurones multicouches.\\
-Cependant, ce n’est qu’en 2012 que cette technologie montre concrètement des résultats impressionnant. C’est cette année-là que l’équipe de Geoffrey Hinton  de l’Université de Toronto devient le SOTA avec 16\% d’erreur sur la base ImageNet (5 catégories, 1,3 million d’images). Le réseau convolutif est à ce moment-ci, programmé sur une carte GPU.
+Cependant, ce n’est qu’en 2012 que cette technologie montre concrètement des résultats impressionnants. C’est cette année-là que l’équipe de Geoffrey Hinton de l’Université de Toronto devient le SOTA avec 16\% d’erreurs sur la base ImageNet (5 catégories, 1,3 million d’images). Le réseau convolutif est, à ce moment-ci, programmé sur une carte GPU.
 \begin{figure}[htb]
 \centering 
 \includegraphics[width=1\columnwidth]{Timeline-of-the-development-of-deep-learning-and-commonly-used-machine-learning} 
-\caption[Chronologie des algorithmes d’apprentissages]{Chronologie des algorithmes d’apprentissages.} 
+\caption[Chronologie des Algorithmes d’Apprentissages]{Chronologie des algorithmes d’apprentissages.} 
 \label{fig:gallery} 
 \end{figure}
-\paragraph{}Le réseau convolutif à des similarités avec la vision du cortex des mammifères. Ces derniers détectent des motifs quelque-soient leurs positions dans l’image (invariance par translation : Pooling), et affectent des millions de neurones à cette tâche, à chaque fois et pour toutes les orientations de motifs, lesquelles sont les contours des objets de l’image.
-Grâce au chercheur japonais Kunihiko Fukushima, qui a travailler en allant plus loin que le modèle \index{Hubel}\index{Wiesel}d’Hubel et Wiesel$^{1}$\let\thefootnote\relax\footnotetext{1. \textit{i.e. Ils prouvèrent que les aires du cortex visuel primaire jouent le rôle d’un extracteur de caractéristique.}}, un pas est franchi : le progression dans le réseau passe de couche en couche et entraîne la dernière couche mais la rétropropagation n’existe pas encore\cite{LeCun_1998_gblatdr}. \\Ces travaux, dont on ne comprend pas bien la cause, sont peu acceptés par la communauté scientifique. Pourtant, ils seront une source d’inspiration pour la création des extracteurs de caractéristiques \index{SIFT}\gls{SIFT} ou \index{HOG}\gls{HOG}. Notons que ces algorithmes ne sont pas des réseaux de neurones mais une série de calculs complexes.
-\paragraph{}Les réseaux convolutifs mélangent dans leur architecture, des cellules simples et complexes (semblable au cortex visuel), mais l’entraînement du système est munit d’une rétropropagation de gradient, donc chaque couche est entraînée pour la reconnaissance de contours.
+\paragraph{}Le réseau convolutif a des similarités avec la vision du cortex des mammifères. Ces derniers détectent des motifs quelque-soient leurs positions dans l’image (invariance par translation : Pooling), et affectent des millions de neurones à cette tâche et pour toutes les orientations de motifs, lesquels sont les contours des objets de l’image.
+Grâce au chercheur japonais Kunihiko Fukushima, qui a travaillé en allant plus loin que le modèle \index{Hubel}\index{Wiesel}d’Hubel et Wiesel$^{1}$\let\thefootnote\relax\footnotetext{1. \textit{i.e. Ils prouvèrent que les aires du cortex visuel primaire jouent le rôle d’un extracteur de caractéristique.}}, un pas est franchi : la progression dans le réseau passe de couche en couche et entraîne la dernière couche mais la rétropropagation n’existe pas encore\cite{LeCun_1998_gblatdr}. \\Ces travaux, dont on ne comprend pas bien la cause, sont peu acceptés par la communauté scientifique. Pourtant, ils seront une source d’inspiration pour la création des extracteurs de caractéristiques \index{SIFT}\gls{SIFT} ou \index{HOG}\gls{HOG}. Notons que ces algorithmes ne sont pas des réseaux de neurones mais une série de calculs complexes.
+\paragraph{}Les réseaux convolutifs mélangent dans leur architecture, des cellules simples et complexes (semblables au cortex visuel), mais l’entraînement du système est munit d’une rétropropagation de gradient, donc chaque couche est entraînée pour la reconnaissance de contours.
 \paragraph{}Chaque couche de convolution utilise une fenêtre se déplaçant sur l’image, dans laquelle chaque neurone va tenter de détecter un motif qui lui est propre, partout dans l’image. Cela donne une feature map (carte de caractéristique). Chaque feature map de sortie, est la somme de convolutions effectuées sur les "features maps" d’entrée avec des noyaux différents.
 
 Ci-joint le programme d’une couche complète de convolution \cite{LeCun_2019_qlma} :
@@ -133,18 +131,18 @@ linenos=true,
 firstnumber=last
 ]{python}{code/conv.py}
 
-L’opération de convolution passe dans un \index{ReLu}\gls{ReLU} pour mettre en évidence ce qui est détecté, et c’est naturellement que le ReLU est suivi par un Pooling, puisque il permet de produire des représentations d’invariants, lesquels améliorent la sortie des neurones (malgré les petites variations à l’intérieur d’une fenêtre).
+L’opération de convolution passe dans un \index{ReLu}\gls{ReLU} pour mettre en évidence ce qui est détecté, et c’est naturellement que le ReLU est suivi par un Pooling, puisque ce dernier permet de produire des représentations d’invariants, lesquels améliorent la sortie des neurones (malgré les petites variations à l’intérieur d’une fenêtre).
 
 L’architecture typique d’un réseau convolutif est : \\
 Conv -> ReLU -> Pool -> Conv -> ReLU -> Pool -> Conv -> ReLU -> Conv
 
-\section{Les réseaux et ImageNet}
+\section{Les Réseaux et ImageNet}
 
-\paragraph{}Il y a plusieurs réseaux existants, lesquels ont représentés le SOTA\ref{fig:Famous_neural_networks}. Pour notre segmentation d’image, nous avons coder implicitement un apprentissage standard sur une structure U-Net avec Xception\ref{fig:Unet_Xception}, mais nous avons poussé plus loin, c’est-à-dire que nous avons utilisé la méthode de \index{Transfer Learning}\gls{Transferlearning} avec le réseau \index{ResNet-50} ResNet-50 sur une structure de \index{DeepLabV3}DeepLabV3 plus.
+\paragraph{}Il y a plusieurs réseaux existants, lesquels ont représentés le SOTA\ref{fig:Famous_neural_networks}. Pour notre segmentation d’image, nous avons codé implicitement un apprentissage standard sur une structure U-Net avec Xception\ref{fig:Unet_Xception}, mais nous avons poussé plus loin, c’est-à-dire que nous avons utilisé la méthode de \index{Transfer Learning}\gls{Transferlearning} avec le réseau \index{ResNet-50} ResNet-50 sur une structure de \index{DeepLabV3}DeepLabV3 plus.
 \begin{figure}[htb]
 \centering 
 \includegraphics[width=1\columnwidth]{Famous_neural_networks} 
-\caption[Les réseaux convolutifs]{Les réseaux convolutifs d’un type particulier selon accury sur ImageNet).} % The text in the square bracket is the caption for the list of figures while the text in the curly brackets is the figure caption
+\caption[Les Réseaux Convolutifs sur ImageNet]{Les réseaux convolutifs d’un type particulier selon accuracy sur ImageNet).} % The text in the square bracket is the caption for the list of figures while the text in the curly brackets is the figure caption
 \label{fig:Famous_neural_networks} 
 \end{figure}
 
@@ -157,17 +155,18 @@ Il a été proposé par le département d’informatique de l’Université de F
 \label{fig:Unet_Xception} 
 \end{figure}
 \paragraph{Xception}
-Ce modèle présente une interprétation des modules Inception dans les réseaux neuronaux de convolution en ce qu’il marque une étape intermédiaire entre la convolution régulière et l’opération de convolution séparable en profondeur\cite{cho2017xception} (une convolution profonde suivie par une convolution par point).\\
-De cette façon, une convolution séparable en profondeur peut être comprise comme un module d’Inception avec un grand nombre de tours maximum.
+Ce modèle représente une interprétation des modules Inception dans les réseaux neuronaux de convolution. Pour être simple, il marque une étape intermédiaire entre la convolution régulière et l’opération de convolution séparable en profondeur\cite{cho2017xception} (une convolution profonde suivie par une convolution par point).
 \\
-Cette observation a mené à proposer une nouvelle architecture de réseau neuronal profond de convolution inspiré par Inception, où les modules d’Inception ont été remplacés avec les profondes convolutions séparables.
+Inversement, une convolution séparable en profondeur peut être comprise comme un module d’Inception avec un grand nombre de tours maximum.
+\\
+Cette observation a mené à proposer une nouvelle architecture de réseau neuronal profond de convolution inspirée par Inception, où les modules d’Inception ont été remplacés avec les convolutions séparables profondes.
 \\
 Cette architecture, surnommé Xception, dépasse légèrement Inception V3 sur la base ImageNet (pour laquelle le réseau Inception V3 avait été fabriqué), et dépasse significativement Inception V3 sur des bases de données de classification d’image plus grande comprenant 350 millions d’images et 17000 classes.
 \\
-Dès lors que l’architecture Xception a le même nombre de paramètres qu’Inception V3, les gains de performance sont dus à l’augmentation des capacités plutôt qu’à un usage plus efficient des paramètres du modèle d’où la réalisation du SOTA.
+Comme l’architecture Xception a le même nombre de paramètres qu’Inception V3, les gains de performance sont essentiellement dus à l’augmentation des capacités plutôt qu’à un usage plus efficient des paramètres du modèle, d’où la réalisation du SOTA.
 
 \paragraph{ResNet-50}
-Il a été proposé par Kaiming He, un chercheur du laboratoire de Microsoft-Research à Beijing. C’est un standard de la reconnaissance d’images. Sa particularité est de comporter des connexions « saute-mouton »  qu’on appelle connexions résiduelles\cite{LeCun_2019_qlma}, et qui court-circuitent des paires de couches.
+Il a été proposé par Kaiming He, un chercheur du laboratoire de Microsoft-Research à Beijing. C’est un standard de la reconnaissance d’image. Sa particularité est de comporter des connexions « saute-mouton » que l’on appelle connexions résiduelles\cite{LeCun_2019_qlma}, et qui court-circuitent des paires de couches.
  
 \paragraph{DeepLabV3 plus}
 Primo, il est composé d’une convolution Atrous\cite{deeplabv3plus2018} qui permet de contrôler explicitement la résolution à laquelle les réponses de features sont calculées à l’intérieur du \index{DCNN}\gls{DCNN} (Deep Convolutional Neural Networks). Ceci permet aussi d’élargir significativement le champ de vue des filtres à incorporer pour de plus large contexte sans augmentation du nombre de paramètres ou du nombre de calcul.
@@ -177,18 +176,18 @@ Primo, il est composé d’une convolution Atrous\cite{deeplabv3plus2018} qui pe
 \caption[DeepLabV3 plus]{Le réseau neuronal \index{DeepLabV3}DeepLabV3 plus} % The text in the square bracket is the caption for the list of figures while the text in the curly brackets is the figure caption
 \label{fig:deeplabv3_plus} 
 \end{figure}
-\paragraph{}Secundo, il propose ASPP pour \index{ASPP}\gls{ASPP}, qui segmente robustement des objets à de multiples échelles. ASPP pourvoit une couche convolutive de caractéristiques en entrée avec des filtres à des taux de multiple échantillonnage et des champs de vue efficaces, bien que capturant les objets aussi bien que le contexte de l’image à de multiples échelles.
+\paragraph{}Secundo, il propose ASPP pour \index{ASPP}\gls{ASPP}, qui segmente robustement des objets à de multiples échelles. ASPP pourvoit une couche convolutive de caractéristiques, en entrée, avec des filtres à des taux de multiple échantillonnage et des champs de vue efficaces, bien que capturant les objets aussi bien que le contexte de l’image à de multiples échelles.
 
 \paragraph{}Tertio, la localisation des limites d’objets est améliorée en combinant des méthodes des DCNN et des modèles graphiques probabilistes. Le déploiement commun des combinaisons de max-pooling et de downsampling dans le DCNN aboutit à une invariance mais celle-ci impacte l’exactitude sur la localisation.
 \\
-Le réseau pallie à ce problème en combinant les réponses à une couche finale DCNN avec un fully connected Conditional Random Field (CRF), laquelle donne des améliorations qualitatives et quantitatives dans la performance de localisation.
+Le réseau atténue ce problème en combinant les réponses à une couche finale DCNN avec un fully connected Conditional Random Field (CRF), laquelle donne des améliorations qualitatives et quantitatives dans la performance de localisation.
 
 \paragraph{}Le système "\index{DeepLabV3}DeepLabV3 plus" règle le SOTA sur PASCAL VOC-2012 de la tâche de segmentation sémantique d’image. atteignant 79.7\% \index{mIoU}mIoU dans le jeu de test, et avance des résultats  sur 3 autres bases : PASCAL-Context, PASCAL-Person-Part, et Cityscapes.
 
-\section{Masques R-CNN}
-\paragraph{}Pour réaliser notre travail de segmentation d’image, nous avons réduit le nombre de classes de nos masques à 8, et ceci de façon astucieuse : Plutôt que de "mapper" chaque pixel des masques à 32 dimensions, nous avons utilisé les fichiers de cotation de nos polygones, ces premiers sont au format JSON, et nous avons ensuite "mapper" les catégories dans un tableau de valeur, sérialisé en JSON, lequel est d’une dimension plus raisonnable que le nombre de pixel d’une image de $1024x2048$ pixels.
+\section{Nos Masques R-CNN}
+\paragraph{}Pour réaliser notre travail de segmentation d’image, nous avons réduit le nombre de classes de nos masques à 8, et ceci de façon astucieuse : Plutôt que de "mapper" chaque pixel des masques à 32 dimensions, nous avons utilisé les fichiers de cotation de nos polygones, ces premiers, qui sont au format JSON, nous leur avons "mapper" les catégories dans un tableau de valeur, sérialisé lui-aussi en JSON. Finalement, ce tableau est d’une dimension plus raisonnable que le nombre de pixel d’une image, qui dans Citiscapes, est de $1024x2048$ pixels.
 \\
-Il ne nous restait plus qu’à utiliser la fonction fillPoly d’openCV pour créer nos nouveaux masques, ceux-ci portant seulement les 8 dimensions nécessaire à notre travail de segmentation d’image. Cette technique nous a permis d’économiser beaucoup de temps de calcul. Nous avons élaboré cette dernière en recherchant comment optimiser le nombre de lecture/écriture sur le disque dur pour limiter le nombre d’accès disque.
+Il ne nous restait ensuite plus qu’à utiliser la fonction fillPoly d’openCV pour créer nos nouveaux masques, ceux-ci portant seulement les 8 dimensions nécessaires à notre travail de segmentation d’image. Cette technique nous a permis d’économiser beaucoup de temps de calcul. Nous avons élaboré cette dernière en recherchant comment optimiser le nombre de lecture/écriture sur le disque dur pour limiter le nombre d’accès disque.
 
 \inputminted[
 frame=lines,
@@ -199,10 +198,10 @@ linenos=true,
 firstnumber=last
 ]{python}{code/mask_preparation.py}
 
-\paragraph{}Grâce à ces préparatifs, nous avons obtenu un jeu de données d’entraînement et de validation. Pour pallier aux $500$ masques de tests complètement opaques de la base fournie, nous avons tiré aléatoirement $500$ images à chaque entraînement parmi les données d’entraînement. Les images furent isolées ipso facto, car une utilisation post-apprentissage est requise afin de réaliser les mesures sur données de test donc des performances (\index{mIoU}mIoU et \index{S{\o}rensen-Dice}\gls{Dice}) de modèle de \index{Deep Learning}\gls{DL}.
+\paragraph{}Grâce à ces préparatifs, nous avons obtenu un jeu de données d’entraînement et de validation. Pour pallier aux $500$ masques de tests complètement opaques de la base fournie, nous avons tiré aléatoirement $500$ images à chaque entraînement parmi les données d’entraînement. Les images furent isolées ipso facto, car une utilisation post-apprentissage est requise en vue de réaliser les mesures sur données de test, donc des performances (\index{mIoU}mIoU et \index{S{\o}rensen-Dice}S{\o}rensen-Dice de modèle de \index{Deep Learning}\gls{DL}.
 
-\section{Data augmentation}
-\paragraph{}Pour réaliser l’augmentation de données nous avons réalisé des retouches d’images en série pour toutes les images de l’entraînement, soit $2475$ images. Nous avons testé plusieurs bibliothèques avant de retenir \href{https://imgaug.readthedocs.io/en/latest/}{imgaug}. Nous avons été limité dans notre choix parce que la différence de dimension entre les images d’entrée et de sortie contrevenait à la structure de la classe ImageDataGenerator de TensorFlow. Cependant, l’égalisation des dimensions d’entrée et de sortie semble être une piste pour travailler la data augmentation en temps réel. Par contre, dans notre situation, nous avons chargé le double du nombre de fichier originaux, dans les apprentissages qui avaient lieu en mode "augmentation de données".
+\section{Data Augmentation}
+\paragraph{}Pour réaliser l’augmentation de données nous avons réalisé des retouches d’images en série pour toutes les images de l’entraînement, soit $2475$ images. Nous avons testé plusieurs bibliothèques avant de retenir \href{https://imgaug.readthedocs.io/en/latest/}{imgaug}. Nous avons été limité dans notre choix par la différence de dimension entre les images d’entrée et de sortie, elle ne respecte pas la structure (la signature) de la méthode centrale de la classe ImageDataGenerator de la bibliothèque \index{TensorFlow}TensorFlow. Cependant, l’égalisation des dimensions d’entrée et de sortie semble être une piste pour travailler la data augmentation en temps réel, même si cela nous rapprocherait de la méthode dont on use pour un réseau \index{GAN}GAN. Par contre, dans notre situation, nous avons chargé le double du nombre de fichier originaux sur le disque-dur, du moins dans les apprentissages qui ont eu lieu en mode "augmentation de données".
 
 \inputminted[
 frame=lines,
@@ -222,7 +221,7 @@ firstnumber=last
 \end{figure}
 
 \section{Comparaison}
-\paragraph{}Nous avons travaillé deux sortes d’algorithmes. Le premier est simple et classique, c’est un réseau \index{R-CNN}R-CNN sur le modèle de \index{U-Net}U-Net et \index{Xception}Xception, qui utilise la structure du modèle, mais pas le pré-entraînement. Le second est plus complexe car il comporte une méthode d’apprentissage par \index{Transfer Learning}transfer learning, celui-ci est obtenu avec le modèle \index{ResNet 50}ResNet 50, sur une structure globale de \index{DeepLabV3} plus.
+\paragraph{}Nous avons travaillé deux sortes d’algorithmes. Le premier, simple et classique, est un réseau \index{R-CNN}R-CNN, sur le modèle de \index{U-Net}U-Net et \index{Xception}Xception. Il utilise la structure du modèle, mais sans le modèle pré-entraîné. Le second est plus complexe car il comporte une méthode d’apprentissage par \index{Transfer Learning}transfer learning, celui-ci est obtenu par le modèle pré-entraîné \index{ResNet 50}ResNet 50, sur une structure globale de \index{DeepLabV3} plus.
 \paragraph{}Nous avons effectué beaucoup d’expériences pour régler nos hypers paramètres d’apprentissage profond\ref{experiments}. Nous avons de plus rangé les expériences selon le type de data en présence, car nous voulions mettre en évidence les améliorations apportées par l’augmentation de data.
 
 \begin{table}[h]\center
@@ -242,7 +241,7 @@ UNet    & 0,5  & 0,6  & 991,54  & multiplication    & rmsprop     & 0,00037     
 \label{comparaison_table}
 \end{table}
 
-\paragraph{}Le tableau \ref{comparaison} nous montre que le meilleur score parmi nos modèles est de $71$\% pour le \index{S{\o}rensen-Dice} coefficient de Dice et de $62$\% pour le \index{mIoU}mIoU. Nous pouvoir nous apercevoir que l’augmentation de data a une valeur réelle seulement pour les cas où le taux d’apprentissage est bas ($>2e^{-4}$) et avec l’optimiseur rmsprop, dont la particularité est de supporter la mise à jour même pour une valeur nulle du gradient dans son implémentation dense.
+\paragraph{}Le tableau \ref{comparaison} nous montre que le meilleur score parmi nos modèles est de $71$\% pour le \index{S{\o}rensen-Dice} coefficient de Dice et de $62$\% pour le \index{mIoU}mIoU. Nous pouvons nous apercevoir que l’augmentation de data a une réelle valeur ajoutée seulement pour les cas où le taux d’apprentissage est bas ($>2e^{-4}$) et en utilisant l’optimiseur rmsprop, dont la particularité est de supporter la mise à jour, même pour une valeur nulle du gradient, quand l’optimiseur est dans une implémentation dense.
 
 \begin{figure}[htb]
 \centering
@@ -250,18 +249,18 @@ UNet    & 0,5  & 0,6  & 991,54  & multiplication    & rmsprop     & 0,00037     
 \subfloat[Exactitude]{\includegraphics[width=.45\columnwidth]{accuracy}} \\
 \subfloat[Balanced]{\includegraphics[width=.45\columnwidth]{balanced}} \quad
 \subfloat[Weighted]{\includegraphics[width=.45\columnwidth]{weighted}}
-\caption[Mesure des performances]{Comparaison de métriques et coût des meilleurs modèles pour chaque réseau.} % The text in the square bracket is the caption for the list of figures while the text in the curly brackets is the figure caption
+\caption[Mesure des Performances]{Comparaison de métriques et de coûts des meilleurs modèles pour chaque réseau.} % The text in the square bracket is the caption for the list of figures while the text in the curly brackets is the figure caption
 \label{fig:comparaison}
 \end{figure}
 
 \section{Conclusion}
-\paragraph{}Dans cet article, nous avons présenté nos différentes approches, celle de U-Net avec Xception et celle de DeepLab avec ResNet. De plus nous avons parcouru l’histoire des réseaux convolutifs du siècle dernier à nos jours. Nous avons pris le soin d’énumérer les réseaux ayant dépassé les SOTA puis de nous concentrer sur une sélection d’une poignée d’entre-eux\ref{comparaison}.
+\paragraph{}Dans cet article, nous avons présenté nos différentes approches, celle de U-Net avec Xception et celle de DeepLab avec ResNet. De plus nous avons parcouru l’histoire des réseaux convolutifs du siècle dernier à nos jours. Nous avons pris le soin d’énumérer les réseaux ayant dépassés les SOTA puis de nous concentrer sur une sélection parmi une poignée d’entre-eux\ref{comparaison}.
 \\
 Ensuite nous avons mis l’accent sur la construction d’une base de données augmentées\ref{data_augmentation} et sur l’amélioration notable qu’elle pourvoie à l’apprentissage du modèle\ref{comparaison_table}.
 \\
-Pour poursuivre cette étude, il serait utile de modifier l’usage du ResNet-50 par son petit-frère le ResNet-152. De plus, il nous semblerait utile de tester les performances d’autres réseaux pré-entraînés dans le modèle utilisé, ou encore de poursuivre l’entraînement en réduisant encore un peu plus le taux d’apprentissage.
+Pour poursuivre cette étude, il serait utile de modifier l’usage du ResNet-50 par son petit-frère le ResNet-152, comportant plus de couches de convolution. De plus, il nous semblerait utile de tester les performances d’autres réseaux pré-entraînés dans le modèle utilisé, ou encore de poursuivre l’entraînement en réduisant encore un peu plus le taux d’apprentissage.
 \\
-Enfin, il nous paraît pertinent d’imaginer l’ajout d’une autre série de transformation au-moins, à nos données, pour leurs formuler de plus nombreuses augmentations, puisqu’en l’occurence, le réseau semble être plus performant quand il a plus de data.
+Enfin, il nous paraît pertinent d’imaginer l’ajout d’une autre série de transformation au-moins, à nos données, pour leurs formuler de plus nombreuses augmentations, puisqu’en l’occurrence, le réseau semble être plus performant quand il a plus de data.
 \section{Annexe}
 
 \begin{landscape}
