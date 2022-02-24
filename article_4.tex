@@ -183,6 +183,25 @@ Primo, il est composé d’une convolution Atrous\cite{deeplabv3plus2018} qui pe
 Le réseau atténue ce problème en combinant les réponses à une couche finale DCNN avec un fully connected Conditional Random Field (CRF), laquelle donne des améliorations qualitatives et quantitatives dans la performance de localisation.
 
 \paragraph{}Le système "\index{DeepLabV3}DeepLabV3 plus" règle le SOTA sur PASCAL VOC-2012 de la tâche de segmentation sémantique d’image. atteignant 79.7\% \index{mIoU}mIoU dans le jeu de test, et avance des résultats  sur 3 autres bases : PASCAL-Context, PASCAL-Person-Part, et Cityscapes.
+\section{Les Encodeurs-Décodeurs}
+\paragraph{}Nos réseaux utilisent l’architecture d’encodeur-décodeur\cite{zhang2020dive}. Le premier prend une entrée de taille variable et la conformise à un format, le second mappe l’état encodé (dans un état contraint) vers une séquence de longueur variable.
+
+\begin{figure}[htb]
+\centering 
+\includegraphics[width=1\columnwidth]{encoder-decoder} 
+\caption[L’architecture encoder-decoder]{L’architecture encoder-decoder} % The text in the square bracket is the caption for the list of figures while the text in the curly brackets is the figure caption
+\label{fig:data_augmentation} 
+\end{figure}
+\paragraph{}Dans la bibliothèque \index{Keras}Keras, son intégration se fait comme suit :
+
+\inputminted[
+frame=lines,
+framesep=2mm,
+baselinestretch=1,
+fontsize=\footnotesize,
+linenos=true,
+firstnumber=last
+]{python}{code/enc_dec.py}
 
 \section{Nos Masques R-CNN}
 \paragraph{}Pour réaliser notre travail de segmentation d’image, nous avons réduit le nombre de classes de nos masques à 8, et ceci de façon astucieuse : Plutôt que de "mapper" chaque pixel des masques à 32 dimensions, nous avons utilisé les fichiers de cotation de nos polygones, ces premiers, qui sont au format JSON, nous leur avons "mapper" les catégories dans un tableau de valeur, sérialisé lui-aussi en JSON. Finalement, ce tableau est d’une dimension plus raisonnable que le nombre de pixel d’une image, qui dans Citiscapes, est de $1024x2048$ pixels.
@@ -215,11 +234,32 @@ firstnumber=last
 
 \begin{figure}[htb]
 \centering 
-\includegraphics[width=1\columnwidth]{data_augmentation} 
+\includegraphics[width=0.2\columnwidth]{data_augmentation} 
 \caption[Data Augmentation]{Data Augmentation des Images et des Masks R-CNN} % The text in the square bracket is the caption for the list of figures while the text in the curly brackets is the figure caption
 \label{fig:data_augmentation} 
 \end{figure}
+\section{Data Generator}
+Pour permettre le chargement de nos données en cachant la complexité du code, nous avons créé plusieurs classes et un fichier regroupant les fonctions statiques. Ainsi notre classe DataGenerator nous permet-elle d’utiliser une écriture claire avec un switch dans une fonction appelante \_\_call\_\_ et des méthodes utilisant le pattern d’objet Factory pour masquer la complexité du code dans notre classe, laquelle ne contient que le concept auquel nous faisons référence lors du chargement de nos data, dont le code de l’action plus bas niveau se trouve dans un fichier regroupant les fonctions statiques (tools).  Dans notre code, c’est le cadriciel DVC qui joue le rôle de commande à travers un pattern "Command" cette fois, mais l’idée reste la même bien que le concept soit de plus haut niveau.\\
+Les deux patterns sont exposés dans le schéma UML suivant :
 
+\begin{figure}[htb]
+\centering 
+\includegraphics[width=0.7\columnwidth]{factory} 
+\caption[Factory Pattern et Data Generator]{Utilisation de pattern Factory et Command pour le DataGenerator} % The text in the square bracket is the caption for the list of figures while the text in the curly brackets is the figure caption
+\label{fig:data_augmentation} 
+\end{figure}
+
+Ci-dessous un extrait de la classe DataGenerator.
+\inputminted[
+frame=lines,
+framesep=2mm,
+baselinestretch=1,
+fontsize=\footnotesize,
+linenos=true,
+firstnumber=last
+]{python}{code/data_generator.py}
+
+Ce genre d’écriture est utilisé en Programmation Orientée Objet et représente un ensemble de bonnes pratiques de codage pour la maintenabilité et notamment le travail en équipe.
 \section{Comparaison}
 \paragraph{}Nous avons travaillé deux sortes d’algorithmes. Le premier, simple et classique, est un réseau \index{R-CNN}R-CNN, sur le modèle de \index{U-Net}U-Net et \index{Xception}Xception. Il utilise la structure du modèle, mais sans le modèle pré-entraîné. Le second est plus complexe car il comporte une méthode d’apprentissage par \index{Transfer Learning}transfer learning, celui-ci est obtenu par le modèle pré-entraîné \index{ResNet 50}ResNet 50, sur une structure globale de \index{DeepLabV3} plus.
 \paragraph{}Nous avons effectué beaucoup d’expériences pour régler nos hypers paramètres d’apprentissage profond\ref{experiments}. Nous avons de plus rangé les expériences selon le type de data en présence, car nous voulions mettre en évidence les améliorations apportées par l’augmentation de data.
@@ -255,12 +295,13 @@ UNet    & 0,5  & 0,6  & 991,54  & multiplication    & rmsprop     & 0,00037     
 
 \section{Conclusion}
 \paragraph{}Dans cet article, nous avons présenté nos différentes approches, celle de U-Net avec Xception et celle de DeepLab avec ResNet. De plus nous avons parcouru l’histoire des réseaux convolutifs du siècle dernier à nos jours. Nous avons pris le soin d’énumérer les réseaux ayant dépassés les SOTA puis de nous concentrer sur une sélection parmi une poignée d’entre-eux\ref{comparaison}.
-\\
-Ensuite nous avons mis l’accent sur la construction d’une base de données augmentées\ref{data_augmentation} et sur l’amélioration notable qu’elle pourvoie à l’apprentissage du modèle\ref{comparaison_table}.
-\\
-Pour poursuivre cette étude, il serait utile de modifier l’usage du ResNet-50 par son petit-frère le ResNet-152, comportant plus de couches de convolution. De plus, il nous semblerait utile de tester les performances d’autres réseaux pré-entraînés dans le modèle utilisé, ou encore de poursuivre l’entraînement en réduisant encore un peu plus le taux d’apprentissage.
-\\
-Enfin, il nous paraît pertinent d’imaginer l’ajout d’une autre série de transformation au-moins, à nos données, pour leurs formuler de plus nombreuses augmentations, puisqu’en l’occurrence, le réseau semble être plus performant quand il a plus de data.
+
+\paragraph{}Ensuite nous avons mis l’accent sur la construction d’une base de données augmentées\ref{data_augmentation} et sur l’amélioration notable qu’elle pourvoie à l’apprentissage du modèle\ref{comparaison_table}.
+
+\paragraph{}Pour poursuivre cette étude, il serait utile de modifier l’usage du ResNet-50 par son petit-frère le ResNet-152, comportant plus de couches de convolution. De plus, il nous semblerait utile de tester les performances d’autres réseaux pré-entraînés dans le modèle utilisé, ou encore de poursuivre l’entraînement en réduisant encore un peu plus le taux d’apprentissage.
+
+\paragraph{}De plus, il nous paraît pertinent d’imaginer l’ajout d’une autre série de transformation au-moins, à nos données, pour leurs formuler de plus nombreuses augmentations, puisqu’en l’occurrence, le réseau semble être plus performant quand il a plus de data.
+\paragraph{}Enfin, pour nous intégrer au mode de lecture en temps réel de notre voiture autonome, nous envisageons de réduire drastiquement la dimension dans les 3 axes du tenseur représentant les images d’entrée, pour assurer une rapidité d’exécution, au moment du fonctionnement du véhicule électrique.
 \section{Annexe}
 
 \begin{landscape}
